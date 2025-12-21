@@ -10,7 +10,8 @@
       nixosModules.default = {
         imports = [
           nixos_hardware.nixosModules.framework-16-7040.amd
-        ];
+        ]
+        ++ (import_modules ./settings);
       };
     };
   inputs = {
