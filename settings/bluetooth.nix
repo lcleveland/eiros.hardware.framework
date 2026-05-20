@@ -1,20 +1,8 @@
-{ pkgs, lib, ... }:
+{ ... }:
 {
-  # MT7922 Bluetooth fails to init on upstream Linux >= 7.0.7 (and >= 6.18.30
-  # LTS) with "Failed to send wmt func ctrl (-22)" because mainline commit
-  # 33634e2ab7c6 ("Bluetooth: btmtk: Remove the resetting step before
-  # downloading the fw") removed the chip subsystem reset that MT7922 needs.
-  # Arch shipped a revert in 7.0.8.arch1; NixOS hasn't picked it up yet.
-  # We apply the revert here until upstream stable backports it.
-  boot.kernelPatches = [
-    {
-      name = "btmtk-revert-remove-resetting-step";
-      patch = ./patches/btmtk-revert-remove-resetting-step.patch;
-    }
-  ];
-
-  # Keep the load-ordering + autosuspend safety nets from 6e18a5b.
-  # softdep verified to work; harmless to keep alongside the patch.
+  # MT7922 BT kernel-side fix lives in ./kernel.nix (pins to a kernel line
+  # without the btmtk regression). The settings below are independent
+  # load-ordering and autosuspend safety nets (commits 6e18a5b, ebaf5e8).
   boot.extraModprobeConfig = ''
     softdep btusb pre: mt7921e
     options btusb enable_autosuspend=0
